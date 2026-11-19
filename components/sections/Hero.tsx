@@ -8,10 +8,9 @@ import {
   Server,
   Smartphone,
   Sparkles,
-  Trophy,
   Zap,
 } from "lucide-react";
-import { heroHighlights, heroIntro, profile, type IntroIcon } from "@/data/profile";
+import { heroHighlights, heroIntro, profile, resumeLink, type IntroIcon } from "@/data/profile";
 import { GlassButton } from "@/components/glass/GlassButton";
 import { Entrance } from "@/components/motion/AnimatedSection";
 import { HeroPortrait } from "./HeroPortrait";
@@ -27,14 +26,13 @@ const chipIcons: Record<IntroIcon, typeof CodeXml> = {
   study: GraduationCap,
   idea: Lightbulb,
 };
-const highlightIcons = { work: BriefcaseBusiness, trophy: Trophy, bolt: Zap } as const;
+const highlightIcons = { work: BriefcaseBusiness, build: Sparkles, bolt: Zap } as const;
 
 /**
  * Introduction: face, name, then a short conversational intro with inline chips.
  * Layout: portrait | name + intro on desktop; stacked on mobile.
  */
 export function Hero() {
-  const resumeHref = profile.resume.available ? profile.resume.href : "/resume";
   const socials = [
     { label: "github", href: profile.social.github },
     { label: "linkedin", href: profile.social.linkedin },
@@ -42,12 +40,12 @@ export function Hero() {
   ];
 
   return (
-    <section id="home" aria-label="Introduction" className="relative mx-auto max-w-6xl px-4 pt-24 pb-8 sm:px-6 md:pt-36 md:pb-12 lg:pt-28">
+    <section id="home" aria-label="Introduction" className="relative mx-auto max-w-6xl px-4 pt-24 pb-6 sm:px-6 md:pt-32 md:pb-8 lg:pt-32">
       {/* Phones: social-profile layout */}
       <MobileProfile />
 
       {/* Tablet & desktop */}
-      <div className="hidden items-center gap-x-16 gap-y-12 md:grid lg:min-h-[min(780px,calc(100svh-7rem))] lg:grid-cols-[minmax(0,0.7fr)_minmax(0,1.3fr)] lg:gap-y-14">
+      <div className="hidden items-center gap-x-16 gap-y-10 md:grid lg:grid-cols-[minmax(0,0.7fr)_minmax(0,1.3fr)] lg:gap-y-12">
       <Entrance delay={0.04} y={18} className="lg:justify-self-end">
         <HeroPortrait />
       </Entrance>
@@ -56,16 +54,16 @@ export function Hero() {
         <Entrance delay={0.08}>
           <h1
             id="hero-title"
-            className="font-mono text-[clamp(2rem,1.2rem+3vw,3.25rem)] leading-[1.05] font-normal tracking-[-0.04em] text-balance text-ink"
+            className="text-[clamp(2.4rem,1.3rem+3.4vw,3.9rem)] leading-[1.02] font-semibold tracking-[-0.045em] text-balance text-ink"
           >
             {profile.name}
           </h1>
-          <p className="mt-2 text-[0.92rem] text-ink-3">{profile.title}</p>
+          <p className="mt-3 text-[1.05rem] text-ink-2">{profile.title}</p>
         </Entrance>
 
         {/* Conversational intro — chips make the key nouns scannable */}
         <Entrance delay={0.16}>
-          <div className="mt-6 flex max-w-[38rem] flex-col gap-4 text-[1.0625rem] leading-[2.1] text-ink-2 sm:text-[1.1rem]">
+          <div className="mt-6 flex max-w-[40rem] flex-col gap-4 text-[1.125rem] leading-[1.85] text-ink-2 sm:text-[1.22rem]">
             {heroIntro.map((paragraph, pi) => (
               <p key={pi} className="text-pretty">
                 {paragraph.map((part, i) => {
@@ -91,14 +89,14 @@ export function Hero() {
             <GlassButton href="#projects" variant="primary" size="lg" showExternalIcon={false}>
               Explore My Work
             </GlassButton>
-            <GlassButton href={resumeHref} variant="glass" size="lg" showExternalIcon={false}>
-              View Resume
+            <GlassButton href={resumeLink.href} variant="glass" size="lg" showExternalIcon={false}>
+              {resumeLink.label}
             </GlassButton>
           </div>
         </Entrance>
 
         <Entrance delay={0.3}>
-          <ul className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-1 font-mono text-[0.82rem]">
+          <ul className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-1 font-mono text-[0.9rem]">
             {socials.map((s) => {
               const web = s.href.startsWith("http");
               return (

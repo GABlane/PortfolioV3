@@ -1,11 +1,10 @@
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
-import { navItems, profile } from "@/data/profile";
+import { navItems, profile, resumeLink } from "@/data/profile";
 import { BrandMark } from "@/components/ui/BrandMark";
 import { SoundToggle } from "@/components/ui/SoundToggle";
 
 export function Footer() {
-  const resumeHref = profile.resume.available ? profile.resume.href : "/resume";
   const elsewhere = [
     { label: "GitHub", href: profile.social.github },
     { label: "LinkedIn", href: profile.social.linkedin },
@@ -42,7 +41,7 @@ export function Footer() {
               </Link>
             </li>
             <li>
-              <Link href={resumeHref} className="text-ink-2 hover:text-ink">
+              <Link href={resumeLink.href} className="text-ink-2 hover:text-ink">
                 Resume
               </Link>
             </li>

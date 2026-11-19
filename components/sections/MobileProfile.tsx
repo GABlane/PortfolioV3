@@ -1,7 +1,8 @@
 import { ArrowUpRight, BriefcaseBusiness, FileText, FolderGit2, Gamepad2, Layers, Link2, Mail, MapPin, UserRound } from "lucide-react";
 import type { ReactNode } from "react";
-import { profile } from "@/data/profile";
+import { profile, resumeLink } from "@/data/profile";
 import { projects } from "@/data/projects";
+import { expertise } from "@/data/skills";
 import { GlassButton } from "@/components/glass/GlassButton";
 import { Entrance } from "@/components/motion/AnimatedSection";
 import { HeroPortrait } from "./HeroPortrait";
@@ -12,13 +13,12 @@ import { HeroPortrait } from "./HeroPortrait";
  * Counts are derived from real data — nothing invented.
  */
 export function MobileProfile() {
-  const resumeHref = profile.resume.available ? profile.resume.href : "/resume";
   const hackathons = projects.filter((p) => /hackathon/i.test(`${p.team} ${p.context ?? ""}`)).length;
 
   const stats = [
     { value: String(projects.length), label: "Projects", href: "#projects" },
     { value: String(hackathons), label: "Hackathons", href: "#projects" },
-    { value: "1st", label: "Place · C", href: "#about" },
+    { value: String(expertise.length), label: "Focus areas", href: "#expertise" },
   ];
 
   const highlights: { label: string; href: string; icon: ReactNode; external?: boolean }[] = [
@@ -27,7 +27,7 @@ export function MobileProfile() {
     { label: "Expertise", href: "#expertise", icon: <Layers className="size-[22px]" aria-hidden /> },
     { label: "About", href: "#about", icon: <UserRound className="size-[22px]" aria-hidden /> },
     { label: "Contact", href: "#contact", icon: <Mail className="size-[22px]" aria-hidden /> },
-    { label: "Resume", href: resumeHref, icon: <FileText className="size-[22px]" aria-hidden /> },
+    { label: "Resume", href: resumeLink.href, icon: <FileText className="size-[22px]" aria-hidden /> },
     { label: "Playground", href: profile.playground, icon: <Gamepad2 className="size-[22px]" aria-hidden />, external: true },
   ];
 
@@ -85,7 +85,7 @@ export function MobileProfile() {
           <GlassButton href="#projects" variant="primary" className="h-10 px-2 text-[0.86rem]" showExternalIcon={false}>
             Explore
           </GlassButton>
-          <GlassButton href={resumeHref} variant="glass" className="h-10 px-2 text-[0.86rem]" showExternalIcon={false}>
+          <GlassButton href={resumeLink.href} variant="glass" className="h-10 px-2 text-[0.86rem]" showExternalIcon={false}>
             Resume
           </GlassButton>
           <GlassButton

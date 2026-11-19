@@ -1,10 +1,9 @@
 import type { CommandItem } from "@/components/layout/CommandMenu";
-import { navItems, profile } from "@/data/profile";
+import { navItems, profile, resumeLink } from "@/data/profile";
 import { projects } from "@/data/projects";
 
 /** Built on the server so the client menu only receives a small, flat list. */
 export function getCommandItems({ chat = false }: { chat?: boolean } = {}): CommandItem[] {
-  const resumeHref = profile.resume.available ? profile.resume.href : "/resume";
   return [
     ...(chat
       ? [
@@ -36,7 +35,7 @@ export function getCommandItems({ chat = false }: { chat?: boolean } = {}): Comm
         icon: "project" as const,
       })),
     { id: "all-projects", group: "Case studies", label: "All projects", href: "/projects", icon: "project" },
-    { id: "link-resume", group: "Links", label: "Résumé", href: resumeHref, icon: "resume" },
+    { id: "link-resume", group: "Links", label: resumeLink.label, href: resumeLink.href, icon: "resume" },
     { id: "link-email", group: "Links", label: "Email", hint: profile.email, href: `mailto:${profile.email}`, icon: "mail" },
     { id: "link-github", group: "Links", label: "GitHub", hint: `@${profile.social.githubHandle}`, href: profile.social.github, icon: "github" },
     { id: "link-linkedin", group: "Links", label: "LinkedIn", href: profile.social.linkedin, icon: "linkedin" },

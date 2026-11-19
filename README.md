@@ -29,7 +29,8 @@ All copy lives in `data/` — components never hard-code content.
 
 - **Photo:** add `public/images/profile.webp`, then set `profile.photo = "/images/profile.webp"`.
 - **Résumé:** add the PDF to `public/resume/`, set `profile.resume.href` and `available: true`.
-  Until then, résumé links show a temporary "updated résumé on its way" page at `/resume`.
+  Until then, every résumé button becomes "Request Resume" (an email to you). All résumé links
+  read from `resumeLink` in `data/profile.ts`.
 - **Eelio demo:** add `{ kind: "demo", label: "Live demo", href: "…" }` to Eelio's `links` once hosted.
 
 ## Confidentiality

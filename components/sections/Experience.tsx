@@ -8,7 +8,7 @@ export function Experience() {
   const [current, ...previous] = experience.roles;
 
   return (
-    <section id="experience" aria-labelledby="experience-title" className="relative mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-24">
+    <section id="experience" aria-labelledby="experience-title" className="relative mx-auto max-w-6xl px-4 pt-10 pb-16 sm:px-6 sm:pt-14 sm:pb-24">
       <SectionHeading
         id="experience-title"
         eyebrow="01 — Career"

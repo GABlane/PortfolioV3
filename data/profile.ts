@@ -61,6 +61,20 @@ export const profile = {
   },
 } as const;
 
+/**
+ * Every résumé link on the site reads from here.
+ * Until an updated PDF is published (profile.resume.available = true), links
+ * become a "Request Resume" email instead of pointing at a placeholder page.
+ */
+export const resumeLink = profile.resume.available
+  ? { href: profile.resume.href, label: "View Resume", short: "Resume", detail: "Download PDF" }
+  : {
+      href: `mailto:${profile.email}?subject=${encodeURIComponent("Resume request")}`,
+      label: "Request Resume",
+      short: "Resume",
+      detail: "Request by email",
+    };
+
 export type NavItem = { id: string; label: string };
 
 export const navItems: NavItem[] = [
@@ -87,30 +101,20 @@ export const heroIntro: IntroPart[][] = [
   [
     { text: "I'm Gab, a " },
     { chip: "full-stack", icon: "code" },
-    { text: " developer. I build modern " },
-    { chip: "web", icon: "web" },
-    { text: " & " },
-    { chip: "mobile apps", icon: "mobile", after: "," },
-    { text: " the " },
-    { chip: "backend services", icon: "server" },
-    { text: " behind them, and these days I'm focused on " },
+    { text: " developer. I build web and mobile apps and the backend services behind them, and lately I've been focused on " },
     { chip: "practical AI", icon: "ai", after: "." },
   ],
   [
     { text: "Right now I'm a " },
     { chip: "part-time developer", icon: "work" },
-    { text: " while studying " },
-    { chip: "Computer Science", icon: "study", after: "." },
-    { text: " I love turning " },
-    { chip: "complex ideas", icon: "idea" },
-    { text: " into polished digital products." },
+    { text: " while studying Computer Science. I like turning complex ideas into polished digital products." },
   ],
 ];
 
 /** Factual credentials shown under the hero. No invented metrics. */
 export const heroHighlights = [
   { icon: "work", title: "Software Developer", detail: "Part-time · 2026 – Present" },
-  { icon: "trophy", title: "1st Place, C Programming", detail: "University competition · 2023" },
+  { icon: "build", title: "Latest build: BentaBuddy", detail: "Local-first AI · 2026" },
   { icon: "bolt", title: "Meralco IDOL Hackathon", detail: "2026 · Team LarpItOut" },
 ] as const;
 

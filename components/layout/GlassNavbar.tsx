@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { motion, useReducedMotion } from "motion/react";
 import { useEffect, useState } from "react";
 import { FileText, Search } from "lucide-react";
-import { navItems, profile } from "@/data/profile";
+import { navItems, profile, resumeLink } from "@/data/profile";
 import { GitHubIcon, LinkedInIcon } from "@/components/ui/BrandIcons";
 import { openCommandMenu, useShortcutLabel } from "@/components/layout/CommandMenu";
 import { BrandMark } from "@/components/ui/BrandMark";
@@ -73,7 +73,6 @@ export function GlassNavbar() {
   const collapsed = minimizedByScroll && !navEngaged && activeId !== "";
 
 
-  const resumeHref = profile.resume.available ? profile.resume.href : "/resume";
 
   return (
     <header className="pointer-events-none fixed inset-x-0 top-0 z-50">
@@ -194,7 +193,7 @@ export function GlassNavbar() {
             ))}
           </div>
           <Link
-            href={resumeHref}
+            href={resumeLink.href}
             className={cn(
               "glass glass-interactive btn-glass press flex items-center gap-1.5 rounded-full px-4 text-[0.88rem] font-medium text-ink",
               scrolled ? "glass-strong h-11" : "h-12",
@@ -233,7 +232,7 @@ export function GlassNavbar() {
 
         {/* Tablet: utilities collapse into the md nav; show a compact resume link */}
         <Link
-          href={resumeHref}
+          href={resumeLink.href}
           className={cn(
             "glass glass-interactive btn-glass press pointer-events-auto hidden items-center gap-1.5 rounded-full px-4 text-[0.88rem] font-medium text-ink md:flex lg:hidden",
             scrolled ? "glass-strong h-11" : "h-12",

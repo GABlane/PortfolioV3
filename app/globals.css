@@ -113,6 +113,18 @@
   }
 }
 
+/* Wide screens: scale the whole rem-based layout up so content doesn't feel small */
+@media (min-width: 1440px) {
+  html {
+    font-size: 17px;
+  }
+}
+@media (min-width: 1800px) {
+  html {
+    font-size: 18px;
+  }
+}
+
 html {
   background: var(--bg-0);
   -webkit-text-size-adjust: 100%;

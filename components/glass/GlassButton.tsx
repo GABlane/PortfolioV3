@@ -23,8 +23,8 @@ const base =
   "press inline-flex items-center justify-center gap-2 rounded-full font-medium tracking-[-0.01em] whitespace-nowrap select-none";
 
 const sizes: Record<Size, string> = {
-  md: "h-11 px-5 text-[0.94rem]",
-  lg: "h-12 px-6 text-[0.98rem]",
+  md: "h-12 px-6 text-[0.98rem]",
+  lg: "h-14 px-7 text-[1.05rem]",
 };
 
 const variants: Record<Variant, string> = {

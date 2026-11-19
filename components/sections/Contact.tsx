@@ -1,14 +1,13 @@
 import Link from "next/link";
 import { ArrowUpRight, FileText, Mail, Phone } from "lucide-react";
 import type { ReactNode } from "react";
-import { profile } from "@/data/profile";
+import { profile, resumeLink } from "@/data/profile";
 import { Reveal } from "@/components/motion/AnimatedSection";
 import { LightSphere } from "@/components/layout/AmbientBackground";
 import { GitHubIcon, LinkedInIcon } from "@/components/ui/BrandIcons";
 import { CopyEmail } from "./CopyEmail";
 
 export function Contact() {
-  const resumeHref = profile.resume.available ? profile.resume.href : "/resume";
 
   return (
     <section id="contact" aria-labelledby="contact-title" className="relative mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-24">
@@ -80,10 +79,10 @@ export function Contact() {
                 detail="Connect"
               />
               <ContactTile
-                href={resumeHref}
+                href={resumeLink.href}
                 icon={<FileText className="size-5" />}
                 label="Résumé"
-                detail={profile.resume.available ? "Download PDF" : "Updating"}
+                detail={resumeLink.detail}
                 internal
               />
             </ul>

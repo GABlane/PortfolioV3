@@ -40,7 +40,7 @@ export function SectionHeading({
         {title}
       </Heading>
       {subtitle && (
-        <p className="text-pretty text-[1.05rem] leading-relaxed text-ink-2 sm:text-[1.0625rem]">{subtitle}</p>
+        <p className="text-pretty text-[1.075rem] leading-relaxed text-ink-2 sm:text-[1.2rem]">{subtitle}</p>
       )}
     </Reveal>
   );
