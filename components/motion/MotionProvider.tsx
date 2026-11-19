@@ -1,0 +1,13 @@
+"use client";
+
+import { MotionConfig } from "motion/react";
+import type { ReactNode } from "react";
+
+/** Honours the OS reduced-motion setting for every motion component. */
+export function MotionProvider({ children }: { children: ReactNode }) {
+  return (
+    <MotionConfig reducedMotion="user" transition={{ type: "spring", stiffness: 260, damping: 30, mass: 0.9 }}>
+      {children}
+    </MotionConfig>
+  );
+}

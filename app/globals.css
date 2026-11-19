@@ -1,0 +1,608 @@
+@import "tailwindcss";
+
+/* ==========================================================================
+   Design tokens — Light Glass
+   ========================================================================== */
+
+:root {
+  color-scheme: light;
+
+  /* Canvas */
+  --bg-0: #f8faff;
+  --bg-1: #f5f8ff;
+  --bg-2: #eef4ff;
+
+  /* Atmosphere */
+  --atmo-blue: #dceaff;
+  --atmo-lavender: #eae6ff;
+  --atmo-cyan: #cfefff;
+
+  /* Ink */
+  --ink: #0f172a;
+  --ink-2: #3e4a5c;
+  --ink-3: #536176;
+
+  /* Accent — #4F8CFF for light/decor, deeper tones where text contrast matters */
+  --accent: #4f8cff;
+  --accent-cyan: #6ec8ff;
+  --accent-strong: #2563eb;
+  --accent-ink: #1d4ed8;
+
+  /* Glass */
+  --glass-fill: rgba(255, 255, 255, 0.34);
+  --glass-fill-strong: rgba(255, 255, 255, 0.52);
+  --glass-fill-soft: rgba(255, 255, 255, 0.26);
+  --glass-border: rgba(255, 255, 255, 0.7);
+  --glass-hairline: rgba(15, 23, 42, 0.06);
+  --glass-blur: 34px;
+  --glass-blur-strong: 44px;
+  --glass-blur-soft: 24px;
+  --glass-saturate: 185%;
+  /* Frost: a fine white grain baked into every glass surface */
+  --glass-frost: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.1' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23f)'/%3E%3C/svg%3E");
+  --glass-frost-opacity: 0.5;
+
+  --glass-shadow:
+    0 1px 1px rgba(15, 23, 42, 0.03), 0 6px 16px -6px rgba(30, 58, 138, 0.1),
+    0 28px 56px -24px rgba(37, 99, 235, 0.2);
+  --glass-shadow-lifted:
+    0 1px 1px rgba(15, 23, 42, 0.04), 0 12px 28px -10px rgba(30, 58, 138, 0.16),
+    0 40px 80px -28px rgba(37, 99, 235, 0.28);
+  --glass-inset:
+    inset 0 1px 0 rgba(255, 255, 255, 0.95), inset 0 -1px 0 rgba(255, 255, 255, 0.35),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.18);
+
+  /* Radii */
+  --radius-card: 28px;
+  --radius-panel: 36px;
+  --radius-media: 20px;
+  --radius-control: 16px;
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur-fast: 160ms;
+  --dur-base: 280ms;
+  --dur-slow: 520ms;
+}
+
+@media (max-width: 640px) {
+  :root {
+    --glass-blur: 22px;
+    --glass-blur-strong: 26px;
+    --glass-blur-soft: 16px;
+    --glass-saturate: 165%;
+  }
+}
+
+@theme inline {
+  --color-canvas: var(--bg-0);
+  --color-canvas-2: var(--bg-2);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-ink-3: var(--ink-3);
+  --color-accent: var(--accent);
+  --color-accent-cyan: var(--accent-cyan);
+  --color-accent-strong: var(--accent-strong);
+  --color-accent-ink: var(--accent-ink);
+
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, "SF Mono", monospace;
+
+  --radius-card: var(--radius-card);
+  --radius-panel: var(--radius-panel);
+  --radius-media: var(--radius-media);
+  --radius-control: var(--radius-control);
+
+  --ease-out-soft: var(--ease-out);
+}
+
+/* Registered so the glass fill can animate (used by .btn-glass hover). */
+@property --_fill {
+  syntax: "<color>";
+  inherits: false;
+  initial-value: rgba(255, 255, 255, 0.34);
+}
+
+/* ==========================================================================
+   Base
+   ========================================================================== */
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+html {
+  background: var(--bg-0);
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+  text-rendering: optimizeLegibility;
+  hanging-punctuation: first allow-end last;
+}
+
+/* The page background lives on <html> and in <AmbientBackground/>. <body> must stay
+   transparent: an opaque body paints over the fixed -z-10 wallpaper layer. */
+body {
+  background: transparent;
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-feature-settings: "ss01", "cv11";
+  overflow-x: clip;
+}
+
+::selection {
+  background: rgba(79, 140, 255, 0.22);
+  color: var(--ink);
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent-strong);
+  outline-offset: 3px;
+  border-radius: 10px;
+}
+
+[id] {
+  scroll-margin-top: 6.5rem;
+}
+
+/* ==========================================================================
+   Glass material
+   Layers: translucent gradient fill → backdrop blur/saturation →
+   inner specular edges (box-shadow inset) → rim light (::before mask) →
+   sheen + faint caustic tint (::after).
+   ========================================================================== */
+
+@layer components {
+  .glass {
+    --_fill: var(--glass-fill);
+    --_blur: var(--glass-blur);
+    position: relative;
+    isolation: isolate;
+    background:
+      var(--glass-frost),
+      linear-gradient(
+        160deg,
+        rgba(255, 255, 255, 0.26) 0%,
+        rgba(255, 255, 255, 0.04) 45%,
+        rgba(255, 255, 255, 0.14) 100%
+      ),
+      var(--_fill);
+    background-size: 140px 140px, auto, auto;
+    background-blend-mode: soft-light, normal, normal;
+    -webkit-backdrop-filter: blur(var(--_blur)) saturate(var(--glass-saturate));
+    backdrop-filter: blur(var(--_blur)) saturate(var(--glass-saturate));
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-inset), var(--glass-shadow);
+  }
+
+  /* Rim light: a gradient hairline that is bright top-left and bottom-right */
+  .glass::before {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    z-index: 1;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 1) 0%,
+      rgba(255, 255, 255, 0.25) 28%,
+      rgba(255, 255, 255, 0) 50%,
+      rgba(186, 214, 255, 0.55) 78%,
+      rgba(255, 255, 255, 0.9) 100%
+    );
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask:
+      linear-gradient(#000 0 0) content-box exclude,
+      linear-gradient(#000 0 0);
+    pointer-events: none;
+  }
+
+  /* Sheen: soft top-left specular bloom + faint cyan caustic on the lower edge */
+  .glass::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    background:
+      radial-gradient(110% 70% at 6% 0%, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0) 65%),
+      linear-gradient(to top, rgba(110, 200, 255, 0.09), rgba(110, 200, 255, 0) 32%);
+    opacity: 0.9;
+    transition: opacity var(--dur-slow) var(--ease-out);
+    pointer-events: none;
+  }
+
+  .glass-strong {
+    --_fill: var(--glass-fill-strong);
+    --_blur: var(--glass-blur-strong);
+  }
+
+  .glass-soft {
+    --_fill: var(--glass-fill-soft);
+    --_blur: var(--glass-blur-soft);
+    box-shadow: var(--glass-inset), 0 1px 1px rgba(15, 23, 42, 0.03),
+      0 8px 20px -12px rgba(30, 58, 138, 0.14);
+  }
+
+  /* Lens: the brighter, raised bubble used for active / pressed states */
+  .glass-lens {
+    background:
+      radial-gradient(140% 120% at 30% 0%, rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.45) 65%),
+      rgba(255, 255, 255, 0.38);
+    border: 1px solid rgba(255, 255, 255, 0.85);
+    box-shadow:
+      inset 0 1px 0 #fff,
+      inset 0 -2px 6px rgba(79, 140, 255, 0.1),
+      0 1px 2px rgba(15, 23, 42, 0.06),
+      0 6px 16px -6px rgba(37, 99, 235, 0.28);
+  }
+
+  .glass-interactive {
+    transition:
+      transform var(--dur-base) var(--ease-out),
+      box-shadow var(--dur-base) var(--ease-out);
+  }
+
+  /* Glass buttons turn see-through on hover: the frost thins, the rim brightens. */
+  .btn-glass,
+  .btn-glass.press {
+    transition:
+      --_fill var(--dur-slow) var(--ease-out),
+      border-color var(--dur-slow) var(--ease-out),
+      height var(--dur-slow) var(--ease-out),
+      width var(--dur-slow) var(--ease-out),
+      box-shadow var(--dur-base) var(--ease-out),
+      transform var(--dur-fast) var(--ease-out);
+  }
+  @media (hover: hover) {
+    .btn-glass:hover {
+      --_fill: rgba(255, 255, 255, 0.04);
+      border-color: rgba(255, 255, 255, 0.95);
+    }
+    .btn-glass:hover::after {
+      opacity: 0.2;
+    }
+  }
+
+  /* Pointer light: --mx/--my are set by <PointerLight/> on fine-pointer devices only.
+     Off-element defaults keep the light invisible everywhere else. */
+  .glass-interactive::before {
+    background:
+      radial-gradient(
+        200px circle at var(--mx, -400px) var(--my, -400px),
+        rgba(255, 255, 255, 1),
+        rgba(255, 255, 255, 0) 70%
+      ),
+      linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 1) 0%,
+        rgba(255, 255, 255, 0.25) 28%,
+        rgba(255, 255, 255, 0) 50%,
+        rgba(186, 214, 255, 0.55) 78%,
+        rgba(255, 255, 255, 0.9) 100%
+      );
+  }
+  .glass-interactive::after {
+    background:
+      radial-gradient(
+        320px circle at var(--mx, -400px) var(--my, -400px),
+        rgba(255, 255, 255, 0.38),
+        rgba(255, 255, 255, 0) 65%
+      ),
+      radial-gradient(110% 70% at 6% 0%, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0) 65%),
+      linear-gradient(to top, rgba(110, 200, 255, 0.09), rgba(110, 200, 255, 0) 32%);
+  }
+
+  @media (hover: hover) {
+    .glass-interactive:hover {
+      box-shadow: var(--glass-inset), var(--glass-shadow-lifted);
+    }
+    .glass-interactive:hover::after {
+      opacity: 1;
+    }
+  }
+
+  /* Content-layer fill for elements that sit ON glass. Glass is never stacked on
+     glass: nested surfaces use a light fill + hairline instead of a second blur. */
+  .fill-inset {
+    background-color: rgba(255, 255, 255, 0.38);
+    background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0));
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.95),
+      0 0 0 1px rgba(15, 23, 42, 0.05),
+      0 1px 2px rgba(15, 23, 42, 0.04);
+  }
+  .fill-interactive,
+  .fill-interactive.press {
+    transition:
+      background-color var(--dur-slow) var(--ease-out),
+      box-shadow var(--dur-base) var(--ease-out),
+      transform var(--dur-fast) var(--ease-out);
+  }
+  @media (hover: hover) {
+    .fill-interactive:hover {
+      background-color: rgba(255, 255, 255, 0.08);
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.95),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.7),
+        0 0 0 1px rgba(15, 23, 42, 0.07),
+        0 8px 20px -12px rgba(30, 58, 138, 0.22);
+    }
+  }
+
+  /* Tinted glass for dark brand surfaces (e.g. SmartVault) */
+  .glass-dark {
+    background: linear-gradient(150deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.04)),
+      rgba(10, 12, 16, 0.55);
+    -webkit-backdrop-filter: blur(18px) saturate(140%);
+    backdrop-filter: blur(18px) saturate(140%);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18), 0 18px 40px -18px rgba(0, 0, 0, 0.5);
+  }
+
+  /* Primary action — deep accent pill with a glass highlight */
+  /* Primary action — frosted, blue-tinted glass. The blue tint sits on ::before
+     (deep enough that white text keeps ≥ 4.5:1). On hover the tint drains away,
+     leaving clear frosted glass with blue text (≈ 6:1) — transparent, still legible. */
+  .btn-primary {
+    position: relative;
+    isolation: isolate;
+    background: rgba(255, 255, 255, 0.22);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    backdrop-filter: blur(20px) saturate(180%);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.38);
+    text-shadow: 0 1px 1px rgba(15, 23, 42, 0.18);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.55),
+      inset 0 -1px 0 rgba(15, 23, 42, 0.14),
+      inset 0 0 0 1px rgba(37, 99, 235, 0.25),
+      0 1px 2px rgba(15, 23, 42, 0.08),
+      0 10px 24px -10px rgba(37, 99, 235, 0.6);
+  }
+  .btn-primary,
+  .btn-primary.press {
+    transition:
+      transform var(--dur-fast) var(--ease-out),
+      box-shadow var(--dur-slow) var(--ease-out),
+      color var(--dur-slow) var(--ease-out),
+      text-shadow var(--dur-slow) var(--ease-out),
+      border-color var(--dur-slow) var(--ease-out);
+  }
+  .btn-primary::before {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    z-index: -1;
+    border-radius: inherit;
+    background:
+      radial-gradient(120% 70% at 50% -15%, rgba(255, 255, 255, 0.32), rgba(255, 255, 255, 0) 55%),
+      linear-gradient(180deg, rgba(29, 78, 216, 0.77), rgba(30, 64, 175, 0.84));
+    transition: opacity var(--dur-slow) var(--ease-out);
+    pointer-events: none;
+  }
+  @media (hover: hover) {
+    .btn-primary:hover {
+      color: var(--accent-ink);
+      text-shadow: none;
+      border-color: rgba(79, 140, 255, 0.55);
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.85),
+        inset 0 0 0 1px rgba(79, 140, 255, 0.18),
+        0 1px 2px rgba(15, 23, 42, 0.06),
+        0 14px 30px -14px rgba(37, 99, 235, 0.45);
+    }
+    .btn-primary:hover::before {
+      opacity: 0;
+    }
+  }
+  .btn-primary:active {
+    transform: scale(0.98);
+  }
+
+  /* Scroll-edge frost under the floating header: content blurs and fades as it
+     slides beneath the nav, instead of being painted over with an opaque veil. */
+  .header-frost {
+    background: linear-gradient(to bottom, rgba(248, 250, 255, 0.55), rgba(248, 250, 255, 0));
+    -webkit-backdrop-filter: blur(14px) saturate(140%);
+    backdrop-filter: blur(14px) saturate(140%);
+    -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 45%, transparent 100%);
+    mask-image: linear-gradient(to bottom, #000 0%, #000 45%, transparent 100%);
+  }
+
+  .press {
+    transition: transform var(--dur-fast) var(--ease-out);
+  }
+  .press:active {
+    transform: scale(0.97);
+  }
+
+  /* Static atmospheric glow — radial gradients, no filter cost */
+  .orb {
+    position: absolute;
+    border-radius: 9999px;
+    pointer-events: none;
+    background: radial-gradient(closest-side, var(--orb-color, rgba(79, 140, 255, 0.35)), transparent);
+  }
+
+  /* Section/group labels — title case as written (HIG: headers are no longer all caps) */
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    letter-spacing: 0.01em;
+    color: var(--ink-3);
+  }
+
+  /* Content-layer surface. Liquid Glass is reserved for navigation and controls,
+     so content cards use a calm translucent fill with no backdrop blur. */
+  .surface {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.62), rgba(255, 255, 255, 0.46));
+    border: 1px solid rgba(255, 255, 255, 0.75);
+    box-shadow:
+      0 1px 2px rgba(15, 23, 42, 0.04),
+      0 8px 24px -16px rgba(30, 58, 138, 0.18);
+  }
+
+  /* Bubble portrait: slow bob with a breathing shadow (transform/opacity only) */
+  .bubble-bob {
+    animation: bubble-bob 6.5s ease-in-out infinite;
+    will-change: transform;
+  }
+  .bubble-shadow {
+    animation: bubble-shadow 6.5s ease-in-out infinite;
+  }
+  .bubble-bob-sm {
+    animation: bubble-bob-sm 5.5s ease-in-out infinite;
+    will-change: transform;
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+  .text-pretty {
+    text-wrap: pretty;
+  }
+}
+
+@keyframes bubble-bob {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) rotate(-1.2deg);
+  }
+  50% {
+    transform: translate3d(0, -14px, 0) rotate(1.4deg);
+  }
+}
+@keyframes bubble-bob-sm {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) rotate(-1deg);
+  }
+  50% {
+    transform: translate3d(0, -4px, 0) rotate(1deg);
+  }
+}
+@keyframes bubble-shadow {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(0.78);
+    opacity: 0.55;
+  }
+}
+
+/* Fallbacks ---------------------------------------------------------------- */
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .btn-primary::before {
+    background: linear-gradient(180deg, #2f6ff0, #1d4ed8);
+  }
+  .btn-primary:hover::before {
+    opacity: 1;
+  }
+  .btn-primary:hover {
+    color: #fff;
+  }
+  .header-frost {
+    background: linear-gradient(to bottom, rgba(248, 250, 255, 0.94), rgba(248, 250, 255, 0));
+  }
+  .glass {
+    --_fill: rgba(255, 255, 255, 0.86);
+  }
+  .glass-dark {
+    background: rgba(14, 16, 20, 0.92);
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .glass {
+    --_fill: rgba(255, 255, 255, 0.94);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+  .glass-dark {
+    background: rgb(14, 16, 20);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .surface {
+    background: rgba(255, 255, 255, 0.96);
+  }
+  .btn-primary {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+  .btn-primary::before,
+  .btn-primary:hover::before {
+    background: linear-gradient(180deg, #2f6ff0, #1d4ed8);
+    opacity: 1;
+  }
+  .btn-primary:hover {
+    color: #fff;
+  }
+  .btn-glass:hover {
+    --_fill: rgba(255, 255, 255, 0.9);
+  }
+  .fill-interactive:hover {
+    background-color: #fff;
+  }
+  .header-frost {
+    background: linear-gradient(to bottom, rgba(248, 250, 255, 0.96), rgba(248, 250, 255, 0));
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+  .fill-inset {
+    background: #fff;
+  }
+}
+
+@media (prefers-contrast: more) {
+  :root {
+    --ink-2: #2b3545;
+    --ink-3: #3e4a5c;
+    --accent-strong: #1d4ed8;
+    --accent-ink: #1e3a8a;
+  }
+  .surface {
+    background: rgba(255, 255, 255, 0.94);
+    border-color: rgba(15, 23, 42, 0.22);
+  }
+  .btn-primary::before,
+  .btn-primary:hover::before {
+    background: #1e40af;
+    opacity: 1;
+  }
+  .btn-primary,
+  .btn-primary:hover {
+    color: #fff;
+    border-color: #1e3a8a;
+  }
+  .fill-inset {
+    box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.25);
+  }
+  .glass {
+    --_fill: rgba(255, 255, 255, 0.92);
+    border-color: rgba(15, 23, 42, 0.25);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 1ms !important;
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
