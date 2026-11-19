@@ -19,8 +19,8 @@ export const profile = {
 
   email: "johngabrielleofiangga@gmail.com",
   phone: {
-    display: "+63 995 726 9441",
-    href: "tel:+639957269441",
+    display: "+63 924 317 6922",
+    href: "tel:+639243176922",
   },
 
   /**
